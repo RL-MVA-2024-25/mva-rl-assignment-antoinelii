@@ -57,8 +57,8 @@ class ReplayBuffer:
 # DQN Agent
 class ProjectAgent:
     def __init__(self, gamma=0.99, lr=1e-3, buffer_size=1000, batch_size=64, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995):
-        self.state_size = env.observation_space.shape[0]
-        self.action_size = env.state_space.n
+        self.state_size = env.unwrapped.observation_space.shape[0]
+        self.action_size = env.unwrapped.action_space.n
         self.gamma = gamma
         self.lr = lr
         self.batch_size = batch_size
