@@ -106,7 +106,7 @@ class ProjectAgent:
         print(f"Agent's state saved to {path}")
 
     def load(self):
-        checkpoint = torch.load("dqn_100.pth")
+        checkpoint = torch.load("src/dqn_100.pth")
         self.state_size = checkpoint["state_size"]
         self.action_size = checkpoint["action_size"]
         self.gamma = checkpoint["gamma"]
@@ -148,7 +148,7 @@ class ProjectAgent:
 
 # Training Loop
 def train_dqn(env=env, episodes=100, update_freq=10):
-    save_path = f"dqn_{episodes}.pth"
+    save_path = f"src/dqn_{episodes}.pth"
 
     agent = ProjectAgent()
     rewards = []
