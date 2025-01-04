@@ -144,7 +144,7 @@ class ProjectAgent:
     def update_target_network(self):
         self.target_network.load_state_dict(self.q_network.state_dict())
 
-from tqdm import tqdm
+#from tqdm import tqdm
 
 # Training Loop
 def train_dqn(env=env, episodes=100, update_freq=10):
@@ -153,7 +153,7 @@ def train_dqn(env=env, episodes=100, update_freq=10):
     agent = ProjectAgent()
     rewards = []
 
-    for episode in tqdm(range(episodes)):
+    for episode in range(episodes):
         state, _ = env.reset()
         total_reward = 0
         done = False
