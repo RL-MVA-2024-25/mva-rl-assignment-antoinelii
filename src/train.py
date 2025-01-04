@@ -56,9 +56,9 @@ class ReplayBuffer:
 
 # DQN Agent
 class ProjectAgent:
-    def __init__(self, state_size, action_size, gamma=0.99, lr=1e-3, buffer_size=1000, batch_size=64, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995):
-        self.state_size = state_size
-        self.action_size = action_size
+    def __init__(self, gamma=0.99, lr=1e-3, buffer_size=1000, batch_size=64, epsilon_start=1.0, epsilon_end=0.01, epsilon_decay=0.995):
+        self.state_size = env.observation_space.shape[0]
+        self.action_size = env.state_space.n
         self.gamma = gamma
         self.lr = lr
         self.batch_size = batch_size
@@ -68,8 +68,8 @@ class ProjectAgent:
         self.epsilon_min = epsilon_end
         self.epsilon_decay = epsilon_decay
 
-        self.q_network = QNetwork(state_size, action_size)
-        self.target_network = QNetwork(state_size, action_size)
+        self.q_network = QNetwork(self.state_size, self.action_size)
+        self.target_network = QNetwork(self.state_size, self.action_size)
         self.target_network.load_state_dict(self.q_network.state_dict())
         self.target_network.eval()
 
@@ -106,8 +106,8 @@ class ProjectAgent:
         print(f"Agent's state saved to {path}")
 
     def load(self):
-        checkpoint = torch.load("dqn_1000.pth")
-        self.state_size = checkpoint["state_size":]
+        checkpoint = torch.load("dqn_100.pth")
+        self.state_size = checkpoint["state_size"]
         self.action_size = checkpoint["action_size"]
         self.gamma = checkpoint["gamma"]
         self.lr = checkpoint["lr"]
@@ -149,10 +149,8 @@ from tqdm import tqdm
 # Training Loop
 def train_dqn(env=env, episodes=100, update_freq=10):
     save_path = f"dqn_{episodes}.pth"
-    state_size = env.observation_space.shape[0]
-    action_size = env.action_space.n
 
-    agent = ProjectAgent(state_size, action_size)
+    agent = ProjectAgent()
     rewards = []
 
     for episode in tqdm(range(episodes)):
