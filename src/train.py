@@ -106,7 +106,28 @@ class ProjectAgent:
         print(f"Agent's state saved to {path}")
 
     def load(self):
-        checkpoint = torch.load("src/dqn_100.pth")
+        checkpoint = torch.load("src/dqn_1000.pth")
+        self.state_size = checkpoint["state_size"]
+        self.action_size = checkpoint["action_size"]
+        self.gamma = checkpoint["gamma"]
+        self.lr = checkpoint["lr"]
+        self.batch_size = checkpoint["batch_size"]
+
+        self.epsilon = checkpoint["epsilon"]
+        self.epsilon_min = checkpoint["epsilon_min"]
+        self.epsilon_decay = checkpoint["epsilon_decay"]
+
+        self.q_network.load_state_dict(checkpoint["q_network"])
+        self.target_network = QNetwork(self.state_size, self.action_size)
+        self.target_network.load_state_dict(self.q_network.state_dict())
+        self.target_network.eval()
+
+        self.optimizer.load_state_dict(checkpoint["optimizer"])
+        self.criterion.load_state_dict(checkpoint["criterion"])
+        self.memory = ReplayBuffer(self.buffer_size, self.batch_size)
+
+    def load_specified(self, specified_path):
+        checkpoint = torch.load(specified_path)
         self.state_size = checkpoint["state_size"]
         self.action_size = checkpoint["action_size"]
         self.gamma = checkpoint["gamma"]
@@ -147,13 +168,15 @@ class ProjectAgent:
 #from tqdm import tqdm
 
 # Training Loop
-def train_dqn(env=env, episodes=100, update_freq=10):
+def train_dqn(env=env, episodes=1000, update_freq=10, prev_episods=0):
     save_path = f"src/dqn_{episodes}.pth"
-
     agent = ProjectAgent()
+    if prev_episods > 0:
+        prev_path = f"src/dqn_{prev_episods}.pth"
+        agent.load_specified(prev_path)
     rewards = []
 
-    for episode in range(episodes):
+    for episode in range(episodes-prev_episods):
         state, _ = env.reset()
         total_reward = 0
         done = False
@@ -182,4 +205,4 @@ def train_dqn(env=env, episodes=100, update_freq=10):
     return rewards, agent
 
 if __name__ == "__main__":
-    rewards, trained_agent = train_dqn(env=env, episodes=100, update_freq=10)
+    rewards, trained_agent = train_dqn(env=env, episodes=1000, update_freq=10, prev_episods=100)
