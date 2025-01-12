@@ -130,14 +130,16 @@ class ProjectAgent:
         self.rewards = []
         self.losses = []
 
-    def act(self, state):
-        state = torch.tensor(state, dtype=torch.float32).unsqueeze(0).to(self.device)
+    def act(self, observation: np.ndarray, use_random: bool=False) -> int:
+        if (use_random) & (random.random() < self.epsilon):
+            return random.randint(0, self.action_size - 1)
+        observation = torch.tensor(observation, dtype=torch.float32).unsqueeze(0).to(self.device)
         with torch.no_grad():
-            selected_action = self.q_network(state).argmax()
+            selected_action = self.q_network(observation).argmax()
 
         return selected_action.detach().cpu().numpy()
     
-    def save(self, path):
+    def save(self, path: str) -> None:
         with open(path, "wb") as f:
             torch.save(self, f)
         # Save model weights and configuration
@@ -161,7 +163,7 @@ class ProjectAgent:
                 }, path)
         print(f"Agent's state saved to {path}")
 
-    def load(self):
+    def load(self) -> None:
         checkpoint = torch.load(LOAD_PATH)
         self.state_size = checkpoint["state_size"]
         self.action_size = checkpoint["action_size"]
