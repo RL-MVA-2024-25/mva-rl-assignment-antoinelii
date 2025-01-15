@@ -30,9 +30,9 @@ PREV_EPISODES = 0
 EPISODES = 1500
 MODEL_NAME = "ddqn_512"
 if PER:
-    SHORT_PATH = "/content/gdrive/MyDrive/rlassign/" + "logPER_" + MODEL_NAME
+    SHORT_PATH = "src/" + "logPER_" + MODEL_NAME
 else:
-    SHORT_PATH = "/content/gdrive/MyDrive/rlassign/" + "" + MODEL_NAME
+    SHORT_PATH = "src/" + "" + MODEL_NAME
 LOAD_PATH = SHORT_PATH + f"_best.pth"
 reward_scaler = 1e8
 
