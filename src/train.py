@@ -25,7 +25,7 @@ from collections import deque
 import random
 import pickle
 
-PER = True
+PER = True 
 PREV_EPISODES = 0
 EPISODES = 1500
 MODEL_NAME = "ddqn_512"
