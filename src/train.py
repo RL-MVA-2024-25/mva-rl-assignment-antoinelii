@@ -30,7 +30,7 @@ PREV_EPISODES = 0
 EPISODES = 1500
 MODEL_NAME = "ddqn_512"
 if PER:
-    SHORT_PATH = "src/" + "logPER_" + MODEL_NAME
+    SHORT_PATH = "src/" + "torand_logPER_" + MODEL_NAME
 else:
     SHORT_PATH = "src/" + "" + MODEL_NAME
 LOAD_PATH = SHORT_PATH + f"_best.pth"
@@ -508,7 +508,11 @@ def train_dqn_per(env=env, episodes=1000, update_freq=10, prev_episods=0):
 
     for episode in tqdm(range(prev_episods, episodes)):
     #for episode in range(prev_episods, episodes):    
-        state, _ = env.reset()
+        if episode > 450:
+            agent.lr = 3e-4
+            state, _ = env_rand.reset()
+        else:
+            state, _ = env.reset()
         n_etapes = 0
         total_reward = 0
         losses = []
@@ -517,7 +521,10 @@ def train_dqn_per(env=env, episodes=1000, update_freq=10, prev_episods=0):
 
         while not done and not truncated:
             action = agent.select_action(state)
-            next_state, reward, done, truncated, _  = env.step(action)
+            if episode > 450:
+                next_state, reward, done, truncated, _  = env_rand.step(action)
+            else:
+                next_state, reward, done, truncated, _  = env.step(action)
             reward /= reward_scaler
             transition = [state, action, reward, next_state, done]
             agent.memory.store(*transition)
@@ -579,7 +586,9 @@ def train_dqn_per(env=env, episodes=1000, update_freq=10, prev_episods=0):
                     agent.save(SHORT_PATH + f"_best.pth")
 
 
-            print(f"Episode {episode + 1}/{episodes}, Reward: {total_reward}, loss: {agent.losses[-1]}, eval:{eval_reward/1e8}, eval_rand:{eval_reward_rand/1e8}")
+                print(f"Episode {episode + 1}/{episodes}, Reward: {total_reward}, loss: {agent.losses[-1]}, eval:{mean_5_evals/1e8}, eval_rand:{mean_5_evals_rand/1e8}")
+            else:
+                print(f"Episode {episode + 1}/{episodes}, Reward: {total_reward}, loss: {agent.losses[-1]}")
         else:
             print(f"Episode {episode + 1}/{episodes}, Reward: {total_reward}, loss: {agent.losses[-1]}")
 
